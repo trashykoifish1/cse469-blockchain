@@ -1,35 +1,70 @@
-import sys
-import blockchain
-import chain_of_custody
+import argparse
+import command
 
 def main():
-    if len(sys.argv) < 2:
-        print("Error: Missing command. Usage: bchoc <command>")
-        sys.exit(1)
 
-    command = sys.argv[1]
-    if command == 'init':
-        blockchain.initialize_blockchain()
-    elif command == 'add':
-        # Call blockchain.add_block() with appropriate arguments
-        pass
-    elif command == 'checkout':
-        # Call chain_of_custody.checkout_item() with appropriate arguments
-        pass
-    elif command == 'checkin':
-        # Call chain_of_custody.checkin_item() with appropriate arguments
-        pass
-    elif command == 'show':
-        # Call chain_of_custody functions based on arguments
-        pass
-    elif command == 'remove':
-        # Call chain_of_custody.remove_item() with appropriate arguments
-        pass
-    elif command == 'verify':
-        blockchain.verify_blockchain()
-    else:
-        print("Error: Unknown command.")
-        sys.exit(1)
+    # Command line argument parsing
+    parser = argparse.ArgumentParser(prog='bchoc')
+    subparsers = parser.add_subparsers(dest='command')
 
-if __name__ == '__main__':
+    add_parser = subparsers.add_parser('add')
+    add_parser.add_argument('-c', '--case_id', required=True)
+    add_parser.add_argument('-i', '--item_id', action='append', required=True)
+    add_parser.add_argument('-g', '--creator', required=True)
+    add_parser.add_argument('-p', '--password', required=True)
+
+
+    checkout_parser = subparsers.add_parser('checkout')
+    checkout_parser.add_argument('-i', '--item_id', required=True)
+    checkout_parser.add_argument('-p', '--password', required=True)
+
+    checkin_parser = subparsers.add_parser('checkin')
+    checkin_parser.add_argument('-i', '--item_id', required=True)
+    checkin_parser.add_argument('-p', '--password', required=True)
+
+    show_parser = subparsers.add_parser('show')
+    show_subparsers = show_parser.add_subparsers(dest='show_command')
+    show_cases = show_subparsers.add_parser('cases')
+    show_cases.add_argument('-p', '--password', required=True)
+    show_items = show_subparsers.add_parser('items')
+    show_items.add_argument('-c', '--case_id', required=True)
+    show_items.add_argument('-p', '--password', required=True)
+    show_history = show_subparsers.add_parser('history')
+    show_history.add_argument('-c', '--case_id')
+    show_history.add_argument('-i', '--item_id')
+    show_history.add_argument('-n', '--num_entries')
+    show_history.add_argument('-r', '--reverse', action='store_true')
+    show_history.add_argument('-p', '--password', required=True)
+
+    remove_parser = subparsers.add_parser('remove')
+    remove_parser.add_argument('-i', '--item_id', required=True)
+    remove_parser.add_argument('-y', '--reason', required=True)
+    remove_parser.add_argument('-p', '--password', required=True)
+
+    subparsers.add_parser('init')
+    subparsers.add_parser('verify')
+
+    args = parser.parse_args()
+
+    if args.command == 'add':
+        command.add(args.case_id, args.item_id, args.creator, args.password)
+    elif args.command == 'checkout':
+        command.checkout(args.item_id, args.password)
+    elif args.command == 'checkin':
+        command.checkin(args.item_id, args.password)
+    elif args.command == 'show':
+        if args.show_command == 'cases':
+            command.show_cases(args.password)
+        elif args.show_command == 'items':
+            command.show_items(args.case_id, args.password)
+        elif args.show_command == 'history':
+            command.show_history(args.case_id, args.item_id, args.num_entries, args.reverse, args.password)
+    elif args.command == 'remove':
+        command.remove(args.item_id, args.reason, args.password)
+    elif args.command == 'init':
+        command.init()
+    elif args.command == 'verify':
+        command.verify()
+
+if __name__ == "__main__":
     main()
