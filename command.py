@@ -1,11 +1,7 @@
-import os
-import struct
-import time
-import uuid
-from Crypto.Cipher import AES
-from utils import encrypt_aes_ecb, decrypt_aes_ecb
-from initialize import initialize
-from add_block import add_block
+from utils import *
+from initialize import *
+from add_block import *
+from constant import *
 
 
 
@@ -74,4 +70,7 @@ def verify():
     """
     Verify the integrity of the blockchain.
     """
+    with open(blockchain_file, 'rb') as file:
+            blockchain_data = file.read()
+            print(blockchain_data)
     pass
