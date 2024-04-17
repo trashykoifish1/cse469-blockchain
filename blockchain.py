@@ -1,3 +1,6 @@
+### DON'T USE THIS FILE, USE THIS FOR REFERENCE ONLY ###
+
+
 import os
 import sys
 import struct
