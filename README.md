@@ -6,9 +6,9 @@
 
 - [x] init
 - [x] add
-- [ ] checkout/checkin
-- [ ] show_cases
-- [ ] show_items
+- [x] checkout/checkin
+- [x] show_cases
+- [x] show_items
 - [ ] show_history
 - [ ] remove
 - [ ] verify

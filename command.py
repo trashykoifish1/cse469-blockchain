@@ -1,8 +1,9 @@
+from constant import *
 from utils import *
 from initialize import *
 from add_block import *
-from constant import *
-
+import check_block
+import show_block
 
 
 def add(case_id, item_id, creator, password):
@@ -25,25 +26,25 @@ def checkout(item_id, password):
     """
     Checkout an item from the blockchain.
     """
-    pass
+    check_block.checkout(item_id, password)
 
 def checkin(item_id, password):
     """
     Checkin an item to the blockchain.
     """
-    pass
+    check_block.checkin(item_id, password)
 
-def show_cases(password):
+def show_cases():
     """
     Show all cases in the blockchain.
     """
-    pass
+    show_block.show_cases()
 
 def show_items(case_id, password):
     """
     Show all items in a case in the blockchain.
     """
-    pass
+    show_block.show_items(case_id, password)
 
 def show_history(case_id, item_id, num_entries, reverse, password):
     """

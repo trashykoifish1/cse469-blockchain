@@ -26,7 +26,7 @@ def main():
     show_parser = subparsers.add_parser('show')
     show_subparsers = show_parser.add_subparsers(dest='show_command')
     show_cases = show_subparsers.add_parser('cases')
-    show_cases.add_argument('-p', '--password', required=True)
+    # show_cases.add_argument('-p', '--password', required=True)
     show_items = show_subparsers.add_parser('items')
     show_items.add_argument('-c', '--case_id', required=True)
     show_items.add_argument('-p', '--password', required=True)
@@ -55,7 +55,7 @@ def main():
         command.checkin(args.item_id, args.password)
     elif args.command == 'show':
         if args.show_command == 'cases':
-            command.show_cases(args.password)
+            command.show_cases()
         elif args.show_command == 'items':
             command.show_items(args.case_id, args.password)
         elif args.show_command == 'history':

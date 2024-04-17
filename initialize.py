@@ -3,8 +3,8 @@ import os
 import struct
 import time
 import uuid
-from utils import encrypt_aes_ecb
-from constant import AES_KEY
+from utils import *
+from constant import *
 
 def check_initial_block():
     """
@@ -61,21 +61,17 @@ def create_initial_block():
     - Packed initial block data.
     """
     # Generate block data
-    previous_hash = b''  # No previous hash for initial block
-    timestamp = time.time()
-    case_id = 0  # No case ID for initial block
-    item_id = 0  # No item ID for initial block
-    state = 'INITIAL'
-    creator = ''  # No creator for initial block
-    owner = ''  # No owner for initial block
-    data_length = len(b'Initial block')
-    data = b'Initial block'
-
-    # Encrypt case_id and item_id
-    encrypted_case_id = encrypt_aes_ecb(struct.pack("I", case_id), AES_KEY)
-    encrypted_item_id = encrypt_aes_ecb(struct.pack("I", item_id), AES_KEY)
+    previous_hash = b'\0' * 32  # 32 bytes of zero
+    timestamp = 0  # 8 bytes (integer)
+    case_id = b'0' * 32  # 32 bytes (32 zero's)
+    evidence_id = b'0' * 32  # 32 bytes (32 zero's)
+    state = b'INITIAL\0\0\0\0\0'  # 12 bytes
+    creator = b'\0' * 12  # 12 bytes (12 null bytes)
+    owner = b'\0' * 12  # 12 bytes (12 null bytes)
+    data_length = 14  # 4 bytes (integer)
+    data = b'Initial block\0'
 
     # Create the initial block instance
-    packed_block = struct.pack("32s d 32s 32s 12s 12s 12s I", previous_hash, timestamp, encrypted_case_id, encrypted_item_id, state.encode().ljust(12, b'\0'), creator.encode().ljust(12, b'\0'), owner.encode().ljust(12, b'\0'), data_length) + data
+    packed_block = struct.pack("32s d 32s 32s 12s 12s 12s I", previous_hash, timestamp, case_id, evidence_id, state, creator, owner, data_length) + data
 
     return packed_block
