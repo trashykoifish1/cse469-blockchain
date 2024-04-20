@@ -84,7 +84,7 @@ def show_items(case_id):
 
 
 def show_history(case_id, item_id, num_entries, reverse, password=None):
-    blockchain_file = os.getenv('BCHOC_FILE_PATH')
+    blockchain_file = os.getenv('BCHOC_FILE_PATH', 'blockchain.dat')
     passwords = [get_password("POLICE"), get_password("LAWYER"), get_password("ANALYST"), get_password("EXECUTIVE"), get_password("CREATOR")]
 
     try:
@@ -126,10 +126,10 @@ def show_history(case_id, item_id, num_entries, reverse, password=None):
                 else:
                     case_id = '00000000-0000-0000-0000-000000000000'
                     item_id = '0'
-                if password is not None and password in passwords:
+                if password in passwords:
                     blocks.append((case_id, item_id, state.decode().strip('\0'), timestamp, creator.decode().strip('\0'), owner.decode().strip('\0')))
-                else:
-                    blocks.append((case_id, item_id, state.decode().strip('\0'), timestamp, creator.decode().strip('\0'), owner.decode().strip('\0')))
+                elif password is None:
+                    blocks.append((block_encrypted_case_id.decode("utf-8"), block_encrypted_item_id.decode("utf-8"), state.decode().strip('\0'), timestamp, creator.decode().strip('\0'), owner.decode().strip('\0')))
 
             block_size = 144 + data_length
             offset += block_size
