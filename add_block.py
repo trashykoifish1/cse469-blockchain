@@ -40,6 +40,12 @@ def add_block(case_id, item_ids, creator, password):
     # Load blockchain data
     with open(blockchain_file, 'rb') as file:
             blockchain_data = file.read()
+
+    # Encrypt case_id
+    case_id = uuid.UUID(case_id).int
+    case_id = case_id.to_bytes((case_id.bit_length() + 7) // 8, 'big')
+    encrypted_case_id = encrypt(case_id)
+
     for item_id in item_ids:
         # Check if item_id already exists in the blockchain
         if check_item_exists(blockchain_file, item_id):
@@ -50,14 +56,11 @@ def add_block(case_id, item_ids, creator, password):
         timestamp = get_timestamp()
         state = STATE["checkedin"]
         creator = creator
-        owner = 'Police'
-        data_length = len(f'Item ID: {item_id}')
-        data = f'Item ID: {item_id}'
+        owner = ''
+        data_length = 0
+        data = ''
 
-        # Encrypt case_id and item_id
-        case_id = uuid.UUID(case_id).int
-        case_id = case_id.to_bytes((case_id.bit_length() + 7) // 8, 'big')
-        encrypted_case_id = encrypt(case_id)
+        # Encrypt item_id
         encrypted_item_id = encrypt(struct.pack("I", int(item_id)))
         # Pack block data
         packed_block = struct.pack("32s d 32s 32s 12s 12s 12s I", previous_hash, timestamp, encrypted_case_id,encrypted_item_id, state, creator.encode().ljust(12, b'\0'), owner.encode().ljust(12, b'\0'), data_length) + data.encode()

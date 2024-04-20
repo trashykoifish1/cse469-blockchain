@@ -6,5 +6,11 @@ STATE = {
     "checkedin": b"CHECKEDIN\0\0\0",
     "checkedout": b"CHECKEDOUT\0\0"
 }
+DEL = {
+    "disposed": b"DISPOSED\0\0\0\0",
+    "destroyed": b"DESTROYED\0\0\0",
+    "released": b"RELEASED\0\0\0\0"
+
+}
 
 blockchain_file = os.getenv('BCHOC_FILE_PATH')

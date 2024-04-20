@@ -45,7 +45,10 @@ def main():
 
     subparsers.add_parser('init')
     subparsers.add_parser('verify')
-    args = parser.parse_args()
+    try:
+        args = parser.parse_args()
+    except SystemExit:
+        sys.exit(0)
     if args.command == 'add':
         command.add(args.case_id, args.item_id, args.creator, args.password)
     elif args.command == 'checkout':

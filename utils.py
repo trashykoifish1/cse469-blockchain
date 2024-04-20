@@ -154,19 +154,21 @@ def calculate_hash(data):
 if __name__ == "__main__":
     # For testing purposes
     blockchain_file = os.getenv('BCHOC_FILE_PATH')
-    data = uuid.UUID('119482d8-3fbf-4fa8-8948-d2f38d021ae4').bytes
-    print(f"Original data : {data}")
-    encrypted_data = encrypt(data)
-    print(f"Encrypted data: {encrypted_data}")
-    decrypted_data = decrypt(encrypted_data)
-    print(f"Decrypted data: {decrypted_data}")
-    uuid_original = uuid.UUID(bytes=decrypted_data)
-    print(f"Decrypted UUID: {uuid_original}")
+    data = uuid.UUID('00000000-0000-0000-0000-000000000000').bytes
+    print(data)
+    uuid_original = uuid.UUID(bytes=data)
+    print(uuid_original)
+    # print(f"Original data : {data}")
+    # encrypted_data = encrypt(data)
+    # print(f"Encrypted data: {encrypted_data}")
+    # decrypted_data = decrypt(encrypted_data)
+    # print(f"Decrypted data: {decrypted_data}")
+    # print(f"Decrypted UUID: {uuid_original}")
     timestamp = get_timestamp()
     display_time = get_string_timestamp(timestamp)
     print(f"Current timestamp: {timestamp}")
     print(f"Display time: {display_time}")
-    item_id = 1004820154
+    item_id = 2094523412
     encrypted_item_id = encrypt(struct.pack("I", item_id))
     decrypted_item_id = decrypt(encrypted_item_id)
     print(f"Item ID: {item_id}")

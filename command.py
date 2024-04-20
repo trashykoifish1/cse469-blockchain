@@ -4,6 +4,8 @@ from initialize import *
 from add_block import *
 import check_block
 import show_block
+import remove_block
+import verify_block
 
 
 def add(case_id, item_id, creator, password):
@@ -40,23 +42,23 @@ def show_cases():
     """
     show_block.show_cases()
 
-def show_items(case_id, password):
+def show_items(case_id):
     """
     Show all items in a case in the blockchain.
     """
-    show_block.show_items(case_id, password)
+    show_block.show_items(case_id)
 
 def show_history(case_id, item_id, num_entries, reverse, password):
     """
     Show the history of a case or an item in the blockchain.
     """
-    pass
+    show_block.show_history(case_id, item_id, num_entries, reverse, password)
 
 def remove(item_id, reason, password):
     """
     Remove an item from the blockchain.
     """
-    pass
+    remove_block.remove(item_id, reason, password)
 
 def init():
     """
@@ -71,7 +73,4 @@ def verify():
     """
     Verify the integrity of the blockchain.
     """
-    with open(blockchain_file, 'rb') as file:
-            blockchain_data = file.read()
-            print(blockchain_data)
-    pass
+    verify_block.verify()

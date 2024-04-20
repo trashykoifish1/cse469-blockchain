@@ -34,6 +34,9 @@ def checkin(item_id, password):
         item_id = int.from_bytes(item_id, "little")
         case_id = decrypt(encrypted_case_id)
         case_id = uuid.UUID(bytes=case_id)
+        if state in [DEL["disposed"], DEL["destroyed"], DEL["released"]]:
+            print(f"Error: Item ID {item_id} has been removed from the blockchain.")
+            exit(1)
         if state == STATE["checkedin"]:
             print(f"Error: Item ID {item_id} is already checked in.")
             exit(1)
@@ -79,6 +82,9 @@ def checkout(item_id, password):
         item_id = int.from_bytes(item_id, "little")
         case_id = decrypt(encrypted_case_id)
         case_id = uuid.UUID(bytes=case_id)
+        if state in [DEL["disposed"], DEL["destroyed"], DEL["released"]]:
+            print(f"Error: Item ID {item_id} has been removed from the blockchain.")
+            exit(1)
         if state == STATE["checkedout"]:
             print(f"Error: Item ID {item_id} is already checked out.")
             exit(1)
