@@ -16,10 +16,10 @@
 
 ## Test Cases Passed
 
-- 71/96
+- 91/96
   > To do: fix gradescope test cases, log with no password: password is optional, remove block creator field is shifted bad, checkin/checkout: change the owner to the one corresponding to the password
 
-## Fail Outputs
+## Fail Outputs (OLD)
 
 ### Test #009 - add with one case_id and multiple item_id values and status of the added item is CHECKEDIN (0/2)
 
