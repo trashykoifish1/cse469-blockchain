@@ -23,7 +23,9 @@ def remove(item_id, reason, password):
         print(f"Error: Blockchain file '{blockchain_file}' not found.")
         exit(1)
 
-    encrypted_item_id = encrypt(struct.pack("I", int(item_id)))
+    item_id = int(item_id)
+    item_id_bytes = item_id.to_bytes(16, 'big')
+    encrypted_item_id = encrypt(item_id_bytes)
     last_block = None
     offset = 0
 
@@ -45,7 +47,7 @@ def remove(item_id, reason, password):
         print(f"Error: Item ID {item_id} not found in the blockchain.")
         exit(1)
 
-    _, _, _, _, state, _, _, _ = struct.unpack("32s d 32s 32s 12s 12s 12s I", last_block[:144])
+    _, _, encrypted_case_id, _, state, creator, owner, _ = struct.unpack("32s d 32s 32s 12s 12s 12s I", last_block[:144])
     state = state.decode().strip('\0')
 
     if state != "CHECKEDIN":
@@ -54,14 +56,11 @@ def remove(item_id, reason, password):
 
     previous_hash = calculate_hash(last_block)
     timestamp = get_timestamp()
-    encrypted_case_id = last_block[40:72]
     state = reason.ljust(12, '\0').encode()
-    creator = last_block[112:124]
-    owner = last_block[124:136]
     data_length = 0
     data = ''
     packed_block = struct.pack("32s d 32s 32s 12s 12s 12s I", previous_hash, timestamp, encrypted_case_id, encrypted_item_id, state, creator, owner, data_length) + data.encode()
-
+    print(packed_block)
     blockchain_data += packed_block
 
     try:

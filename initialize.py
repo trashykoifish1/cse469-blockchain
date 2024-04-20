@@ -62,7 +62,7 @@ def create_initial_block():
     """
     # Generate block data
     previous_hash = b'\0' * 32  # 32 bytes of zero
-    timestamp = 0  # 8 bytes (integer)
+    timestamp = get_timestamp()  # 8 bytes (integer)
     case_id = b'0' * 32  # 32 bytes (32 zero's)
     evidence_id = b'0' * 32  # 32 bytes (32 zero's)
     state = b'INITIAL\0\0\0\0\0'  # 12 bytes

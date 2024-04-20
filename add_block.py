@@ -61,7 +61,9 @@ def add_block(case_id, item_ids, creator, password):
         data = ''
 
         # Encrypt item_id
-        encrypted_item_id = encrypt(struct.pack("I", int(item_id)))
+        item_id = int(item_id)
+        item_id_bytes = item_id.to_bytes(16, 'big')
+        encrypted_item_id = encrypt(item_id_bytes)
         # Pack block data
         packed_block = struct.pack("32s d 32s 32s 12s 12s 12s I", previous_hash, timestamp, encrypted_case_id,encrypted_item_id, state, creator.encode().ljust(12, b'\0'), owner.encode().ljust(12, b'\0'), data_length) + data.encode()
         # print(sha256(packed_block).hexdigest())

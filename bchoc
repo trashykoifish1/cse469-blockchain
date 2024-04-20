@@ -36,7 +36,7 @@ def main():
     show_history.add_argument('-i', '--item_id')
     show_history.add_argument('-n', '--num_entries')
     show_history.add_argument('-r', '--reverse', action='store_true')
-    show_history.add_argument('-p', '--password', required=True)
+    show_history.add_argument('-p', '--password')
 
     remove_parser = subparsers.add_parser('remove')
     remove_parser.add_argument('-i', '--item_id', required=True)
@@ -45,10 +45,7 @@ def main():
 
     subparsers.add_parser('init')
     subparsers.add_parser('verify')
-    try:
-        args = parser.parse_args()
-    except SystemExit:
-        sys.exit(0)
+    args = parser.parse_args()
     if args.command == 'add':
         command.add(args.case_id, args.item_id, args.creator, args.password)
     elif args.command == 'checkout':

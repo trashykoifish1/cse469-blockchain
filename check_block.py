@@ -11,7 +11,7 @@ from utils import *
 from constant import *
 from initialize import *
 
-#TODO: checkin, checkout is finished for now, move on to show_cases
+
 
 def checkin(item_id, password):
     blockchain_file = os.getenv('BCHOC_FILE_PATH')
@@ -23,15 +23,17 @@ def checkin(item_id, password):
         # Initialize blockchain
         initialize()
     
+
+
     if not check_item_exists(blockchain_file, item_id):
         print(f"Error: Item ID {item_id} does not exist in the blockchain.")
         exit(1)
     else:
         with open(blockchain_file, 'rb') as file:
             blockchain_data = file.read()
-        _, _, encrypted_case_id, encrypted_item_id, state, creator, owner, data_length = get_last_block_from_item_id(blockchain_file, item_id)
+        _, _, encrypted_case_id, encrypted_item_id, state, creator, _, data_length = get_last_block_from_item_id(blockchain_file, item_id)
         item_id = decrypt(encrypted_item_id)
-        item_id = int.from_bytes(item_id, "little")
+        item_id = int.from_bytes(item_id, "big")
         case_id = decrypt(encrypted_case_id)
         case_id = uuid.UUID(bytes=case_id)
         if state in [DEL["disposed"], DEL["destroyed"], DEL["released"]]:
@@ -41,11 +43,19 @@ def checkin(item_id, password):
             print(f"Error: Item ID {item_id} is already checked in.")
             exit(1)
         else:
+            if password == get_password("POLICE"):
+                owner = b"POLICE\0\0\0\0\0\0"
+            elif password == get_password("LAWYER"):
+                owner = b"LAWYER\0\0\0\0\0\0"
+            elif password == get_password("ANALYST"):
+                owner = b"ANALYST\0\0\0\0\0"
+            elif password == get_password("EXECUTIVE"):
+                owner = b"EXECUTIVE\0\0\0"
             previous_hash = calculate_hash(blockchain_data)
             timestamp = get_timestamp()
             state = STATE["checkedin"]
-            data_length = len(f'Item ID: {item_id}')
-            data = f'Item ID: {item_id}'
+            data_length = 0
+            data = ''
             packed_block = struct.pack("32s d 32s 32s 12s 12s 12s I", previous_hash, timestamp, encrypted_case_id,encrypted_item_id, state, creator, owner, data_length) + data.encode()
             blockchain_data += packed_block
             print(f"Case: {case_id}")
@@ -79,9 +89,10 @@ def checkout(item_id, password):
             blockchain_data = file.read()
         _, _, encrypted_case_id, encrypted_item_id, state, creator, owner, data_length = get_last_block_from_item_id(blockchain_file, item_id)
         item_id = decrypt(encrypted_item_id)
-        item_id = int.from_bytes(item_id, "little")
+        item_id = int.from_bytes(item_id, "big")
         case_id = decrypt(encrypted_case_id)
         case_id = uuid.UUID(bytes=case_id)
+
         if state in [DEL["disposed"], DEL["destroyed"], DEL["released"]]:
             print(f"Error: Item ID {item_id} has been removed from the blockchain.")
             exit(1)
@@ -89,11 +100,19 @@ def checkout(item_id, password):
             print(f"Error: Item ID {item_id} is already checked out.")
             exit(1)
         else:
+            if password == get_password("POLICE"):
+                owner = b"POLICE\0\0\0\0\0\0"
+            elif password == get_password("LAWYER"):
+                owner = b"LAWYER\0\0\0\0\0\0"
+            elif password == get_password("ANALYST"):
+                owner = b"ANALYST\0\0\0\0\0"
+            elif password == get_password("EXECUTIVE"):
+                owner = b"EXECUTIVE\0\0\0"
             previous_hash = calculate_hash(blockchain_data)
             timestamp = get_timestamp()
             state = STATE["checkedout"]
-            data_length = len(f'Item ID: {item_id}')
-            data = f'Item ID: {item_id}'
+            data_length = 0
+            data = ''
             packed_block = struct.pack("32s d 32s 32s 12s 12s 12s I", previous_hash, timestamp, encrypted_case_id,encrypted_item_id, state, creator, owner, data_length) + data.encode()
             blockchain_data += packed_block
             print(f"Case: {case_id}")

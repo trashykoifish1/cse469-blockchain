@@ -20,7 +20,7 @@ def decrypt(data):
     cipher = AES.new(AES_KEY, AES.MODE_ECB)
     data = binascii.unhexlify(data)
     decrypted_data = cipher.decrypt(data)
-    return decrypted_data.rstrip(b'\0')
+    return decrypted_data
 
 def get_password(role):
     return os.environ.get(f"BCHOC_PASSWORD_{role}", "")
@@ -72,7 +72,7 @@ def check_item_exists(blockchain_file, item_id):
             block_header = blockchain_data[offset:offset+144]
             _, _, _, encrypted_item_id, _, _, _, data_length = struct.unpack("32s d 32s 32s 12s 12s 12s I", block_header)
             decrypted_item_id = decrypt(encrypted_item_id)
-            if int.from_bytes(decrypted_item_id, "little") == int(item_id):
+            if int.from_bytes(decrypted_item_id, "big") == int(item_id):
                 return True
 
             block_size = 144 + data_length
@@ -98,7 +98,7 @@ def get_block_from_item_id(blockchain_file, item_id):
             block_header = blockchain_data[offset:offset+144]
             _, _, _, encrypted_item_id, _, _, _, data_length = struct.unpack("32s d 32s 32s 12s 12s 12s I", block_header)
             decrypted_item_id = decrypt(encrypted_item_id)
-            if int.from_bytes(decrypted_item_id, "little") == int(item_id):
+            if int.from_bytes(decrypted_item_id, "big") == int(item_id):
                 return struct.unpack("32s d 32s 32s 12s 12s 12s I", block_header)
 
             block_size = 144 + data_length
@@ -125,7 +125,7 @@ def get_last_block_from_item_id(blockchain_file, item_id):
             block_header = blockchain_data[offset:offset+144]
             _, _, _, encrypted_item_id, _, _, _, data_length = struct.unpack("32s d 32s 32s 12s 12s 12s I", block_header)
             decrypted_item_id = decrypt(encrypted_item_id)
-            if int.from_bytes(decrypted_item_id, "little") == int(item_id):
+            if int.from_bytes(decrypted_item_id, "big") == int(item_id):
                 last_block = struct.unpack("32s d 32s 32s 12s 12s 12s I", block_header)
 
             block_size = 144 + data_length
@@ -151,26 +151,42 @@ def calculate_hash(data):
     hasher.update(data)
     return hasher.digest()
 
+def simple_encrypt(data):
+    cipher = AES.new(AES_KEY, AES.MODE_ECB)
+    encrypted_data = cipher.encrypt(data)
+    return binascii.hexlify(encrypted_data)
+
+def simple_decrypt(data):
+    cipher = AES.new(AES_KEY, AES.MODE_ECB)
+    data = binascii.unhexlify(data)
+    decrypted_data = cipher.decrypt(data)
+    return decrypted_data
+
+    
+
 if __name__ == "__main__":
     # For testing purposes
     blockchain_file = os.getenv('BCHOC_FILE_PATH')
-    data = uuid.UUID('00000000-0000-0000-0000-000000000000').bytes
+    data = uuid.UUID('00177366-22e3-4796-9580-2f0421b18cdf').bytes
     print(data)
     uuid_original = uuid.UUID(bytes=data)
     print(uuid_original)
-    # print(f"Original data : {data}")
-    # encrypted_data = encrypt(data)
-    # print(f"Encrypted data: {encrypted_data}")
-    # decrypted_data = decrypt(encrypted_data)
-    # print(f"Decrypted data: {decrypted_data}")
-    # print(f"Decrypted UUID: {uuid_original}")
-    timestamp = get_timestamp()
-    display_time = get_string_timestamp(timestamp)
-    print(f"Current timestamp: {timestamp}")
-    print(f"Display time: {display_time}")
-    item_id = 2094523412
-    encrypted_item_id = encrypt(struct.pack("I", item_id))
-    decrypted_item_id = decrypt(encrypted_item_id)
-    print(f"Item ID: {item_id}")
-    print(f"Encrypted item ID: {encrypted_item_id}")
-    print(f"Decrypted item ID: {int.from_bytes(decrypted_item_id, 'little')}")
+    print(f"Original data : {data}")
+    encrypted_data = encrypt(data)
+    print(f"Encrypted data: {encrypted_data}")
+    decrypted_data = decrypt(b'bb01a39b5fe8a542398a97592a359856')
+    print(f"Decrypted data: {decrypted_data}")
+    print(f"Decrypted UUID: {uuid_original}")
+    # timestamp = get_timestamp()
+    # display_time = get_string_timestamp(timestamp)
+    # print(f"Current timestamp: {timestamp}")
+    # print(f"Display time: {display_time}")
+    # item_id = '3764686797'
+    # item_id = int(item_id)
+    # item_id_bytes = item_id.to_bytes(16, 'big')
+    # encrypted_item_id = encrypt(item_id_bytes)
+    # decrypted_item_id = decrypt(encrypted_item_id)
+    # print(f"Item ID: {item_id}")
+    # print(f"Encrypted item ID: {encrypted_item_id}")
+    # print(f"Decrypted item ID: {int.from_bytes(decrypted_item_id, 'big')}")
+

@@ -36,7 +36,7 @@ def main():
     show_history.add_argument('-i', '--item_id')
     show_history.add_argument('-n', '--num_entries')
     show_history.add_argument('-r', '--reverse', action='store_true')
-    show_history.add_argument('-p', '--password', required=True)
+    show_history.add_argument('-p', '--password')
 
     remove_parser = subparsers.add_parser('remove')
     remove_parser.add_argument('-i', '--item_id', required=True)

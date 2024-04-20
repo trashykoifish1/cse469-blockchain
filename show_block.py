@@ -66,7 +66,7 @@ def show_items(case_id):
 
             if block_encrypted_case_id == encrypted_case_id:
                 decrypted_item_id = decrypt(encrypted_item_id)
-                item_id = int.from_bytes(decrypted_item_id, "little")
+                item_id = int.from_bytes(decrypted_item_id, "big")
                 if item_id not in item_ids:
                     item_ids.append(item_id)
 
@@ -83,12 +83,9 @@ def show_items(case_id):
             print(item_id)
 
 
-def show_history(case_id, item_id, num_entries, reverse, password):
+def show_history(case_id, item_id, num_entries, reverse, password=None):
     blockchain_file = os.getenv('BCHOC_FILE_PATH')
     passwords = [get_password("POLICE"), get_password("LAWYER"), get_password("ANALYST"), get_password("EXECUTIVE"), get_password("CREATOR")]
-    if password not in passwords:
-        print("Invalid password")
-        exit(1)
 
     try:
         with open(blockchain_file, 'rb') as file:
@@ -105,7 +102,9 @@ def show_history(case_id, item_id, num_entries, reverse, password):
         encrypted_case_id = None
 
     if item_id:
-        encrypted_item_id = encrypt(struct.pack("I", int(item_id)))
+        item_id = int(item_id)
+        item_id_bytes = item_id.to_bytes(16, 'big')
+        encrypted_item_id = encrypt(item_id_bytes)
     else:
         encrypted_item_id = None
 
@@ -123,11 +122,14 @@ def show_history(case_id, item_id, num_entries, reverse, password):
                     decrypted_case_id = decrypt(block_encrypted_case_id)
                     decrypted_item_id = decrypt(block_encrypted_item_id)
                     case_id = uuid.UUID(bytes=decrypted_case_id)
-                    item_id = int.from_bytes(decrypted_item_id, "little")
+                    item_id = int.from_bytes(decrypted_item_id, "big")
                 else:
                     case_id = '00000000-0000-0000-0000-000000000000'
                     item_id = '0'
-                blocks.append((case_id, item_id, state.decode().strip('\0'), timestamp, creator.decode().strip('\0'), owner.decode().strip('\0')))
+                if password is not None and password in passwords:
+                    blocks.append((case_id, item_id, state.decode().strip('\0'), timestamp, creator.decode().strip('\0'), owner.decode().strip('\0')))
+                else:
+                    blocks.append((case_id, item_id, state.decode().strip('\0'), timestamp, creator.decode().strip('\0'), owner.decode().strip('\0')))
 
             block_size = 144 + data_length
             offset += block_size
@@ -139,6 +141,9 @@ def show_history(case_id, item_id, num_entries, reverse, password):
         blocks.reverse()
 
     if num_entries is not None:
+        num_entries = int(num_entries)
+        if num_entries > len(blocks):
+            num_entries = len(blocks)
         blocks = blocks[:num_entries]
 
     if len(blocks) != 0:
